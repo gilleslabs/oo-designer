@@ -4,7 +4,11 @@ flow:
   workflow:
     - ssh_command:
         do:
-          io.cloudslang.base.ssh.ssh_command: []
+          io.cloudslang.base.ssh.ssh_command:
+            - password: "${get_sp('linux-password')}"
+            - username: "${get_sp('linux-user')}"
+            - host: "${get_sp('linux-server')}"
+            - command: '${ls /etc}'
         publish:
           - CommandResult: '${return_result}'
         navigate:
@@ -12,14 +16,30 @@ flow:
           - SUCCESS: send_mail
     - send_mail:
         do:
-          io.cloudslang.base.mail.send_mail: []
+          io.cloudslang.base.mail.send_mail:
+            - password: "${get_sp('mail-password')}"
+            - username: "${get_sp('mail-user')}"
+            - subject: Designer EPR - SSH TEST - SUCCESS
+            - body: "${'The SSH-TEST Flow ran successfully, below is the output of the command :'+CommandResult}"
+            - from: "${get_sp('mail-user')}"
+            - to: "${get_sp('to-user')}"
+            - port: '587'
+            - hostname: "${get_sp('mail-server')}"
         navigate:
           - FAILURE: on_failure
           - SUCCESS: SUCCESS
     - on_failure:
         - send_mail_1:
             do:
-              io.cloudslang.base.mail.send_mail: []
+              io.cloudslang.base.mail.send_mail:
+                - password: "${get_sp('mail-password')}"
+                - username: "${get_sp('mail-user')}"
+                - body: "${'The ssh-test has failed with below error'+CommandResult}"
+                - subject: DESIGNER-EPR - SSH TEST - FAILED
+                - to: "${get_sp('to-user')}"
+                - from: "${get_sp('mail-user')}"
+                - port: '587'
+                - hostname: "${get_sp('mail-server')}"
   results:
     - SUCCESS
     - FAILURE
