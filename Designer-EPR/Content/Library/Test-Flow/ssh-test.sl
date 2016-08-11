@@ -40,6 +40,7 @@ flow:
                 - from: "${get_sp('mail-user')}"
                 - port: '587'
                 - hostname: "${get_sp('mail-server')}"
+                - enable_TLS: 'true'
   results:
     - SUCCESS
     - FAILURE
