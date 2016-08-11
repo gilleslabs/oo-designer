@@ -8,7 +8,7 @@ flow:
             - password: "${get_sp('linux-password')}"
             - username: "${get_sp('linux-user')}"
             - host: "${get_sp('linux-server')}"
-            - command: '${ls /etc}'
+            - command: ls /etc
         publish:
           - CommandResult: '${return_result}'
         navigate:
